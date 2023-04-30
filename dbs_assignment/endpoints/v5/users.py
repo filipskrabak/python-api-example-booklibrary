@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from dbs_assignment.config import settings
 from dbs_assignment import database
@@ -25,13 +25,13 @@ async def get_user_by_id(userId: str, db: Session = Depends(database.get_conn)):
         "email": result.email,
         "birth_date": result.birth_date,
         "personal_identificator": result.identification_num,
-        "reservations": [],
-        "rentals": [],
+        #"reservations": [],
+        #"rentals": [],
         "created_at": result.created_at,
         "updated_at": result.updated_at
     }
 
-@router.post("/users")
+@router.post("/users", status_code=status.HTTP_201_CREATED)
 async def get_user_by_id(input: schemas.CreateUserRequest, db: Session = Depends(database.get_conn)):
     # Check if user doesn't exist by email
     if db.query(models.User).filter(models.User.email == input.email).first():
@@ -54,6 +54,7 @@ async def get_user_by_id(input: schemas.CreateUserRequest, db: Session = Depends
     )
     db.add(to_create)
     db.commit()
+
     return {
         "id": to_create.id,
         "personal_identificator": to_create.identification_num,
