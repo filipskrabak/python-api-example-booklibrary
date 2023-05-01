@@ -1,7 +1,14 @@
-from sqlalchemy import Date, DateTime, Integer, String, ForeignKey
+from sqlalchemy import Date, DateTime, Enum, Integer, String, ForeignKey
+import enum
 from sqlalchemy.sql.schema import Column
 from dbs_assignment.database import Base
 from sqlalchemy.dialects.postgresql import UUID
+
+# ENUMS
+class CardStatus(enum.Enum):
+    active = 'active'
+    inactive = 'inactive'
+    expired = 'expired'
 
 class User(Base):
     __tablename__ = "users"
@@ -16,3 +23,12 @@ class User(Base):
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
 
+class Card(Base):
+    __tablename__ = "cards"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    magstripe = Column(String(20), nullable=False)
+    status = Column(Enum(CardStatus), nullable=False)
+    created_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))

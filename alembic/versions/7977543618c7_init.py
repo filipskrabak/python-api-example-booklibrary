@@ -30,7 +30,17 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
     )
+    op.create_table(
+        'cards',
+        sa.Column('id', UUID(as_uuid=True), primary_key=True),
+        sa.Column('user_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('magstripe', sa.String(20), nullable=False),
+        sa.Column('status', sa.Enum('active', 'inactive', 'expired', name='cardstatus'), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
+    )
 
 
 def downgrade() -> None:
     op.drop_table('users')
+    op.drop_table('cards')
