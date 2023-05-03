@@ -32,3 +32,11 @@ class Card(Base):
     status = Column(Enum(CardStatus), nullable=False)
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
+
+class Publication(Base):
+    __tablename__ = "publications"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    created_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))

@@ -28,3 +28,17 @@ class CreateCardRequest(BaseModel):
         if v not in ['active', 'inactive', 'expired']:
             raise ValueError('Status enum must be one of the following: active, inactive, expired')
         return v
+
+class PatchCardRequest(BaseModel):
+    user_id:uuid.UUID = None
+    status:str = None
+
+    @validator('status')
+    def status_must_be_enum(cls, v):
+        if v not in ['active', 'inactive', 'expired']:
+            raise ValueError('Status enum must be one of the following: active, inactive, expired')
+        return v
+
+class CreatePublicationRequest(BaseModel):
+    id:uuid.UUID = None
+    title:str

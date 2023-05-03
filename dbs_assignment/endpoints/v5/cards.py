@@ -44,7 +44,6 @@ async def create_card(input: schemas.CreateCardRequest, db: Session = Depends(da
     if db.query(models.User).filter(models.User.id == input.user_id).first() is None:
         raise HTTPException(status_code=404, detail="User ID not found")
 
-    # Create card
     to_create = models.Card(
         id=input.id,
         user_id=input.user_id,
@@ -65,3 +64,37 @@ async def create_card(input: schemas.CreateCardRequest, db: Session = Depends(da
         "created_at": to_create.created_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
         "updated_at": to_create.updated_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z'
     }
+
+@router.patch("/cards/{cardId}")
+async def update_card(cardId: str, input: schemas.PatchCardRequest, db: Session = Depends(database.get_conn)):
+    result = db.query(models.Card).filter(models.Card.id == cardId).first()
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Not Found")
+
+    if input.status:
+        result.status = input.status
+
+    result.updated_at = datetime.datetime.now()
+    db.commit()
+
+    return {
+        "id": result.id,
+        "user_id": result.user_id,
+        "magstripe": result.magstripe,
+        "status": result.status,
+        "created_at": result.created_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+        "updated_at": result.updated_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z'
+    }
+
+@router.delete("/cards/{cardId}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_card(cardId: str, db: Session = Depends(database.get_conn)):
+    result = db.query(models.Card).filter(models.Card.id == cardId).first()
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Not Found")
+
+    db.delete(result)
+    db.commit()
+
+    return

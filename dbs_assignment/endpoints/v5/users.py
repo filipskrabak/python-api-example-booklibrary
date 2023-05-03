@@ -91,7 +91,7 @@ async def create_user(input: schemas.CreateUserRequest, db: Session = Depends(da
     }
 
 @router.patch("/users/{userId}")
-async def patch_user(userId: str, input: schemas.PatchUserRequest, db: Session = Depends(database.get_conn)):
+async def update_user(userId: str, input: schemas.PatchUserRequest, db: Session = Depends(database.get_conn)):
     parent_id = None
 
     result = db.query(models.User).filter(models.User.id == userId).first()
