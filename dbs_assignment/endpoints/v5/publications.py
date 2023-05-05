@@ -28,7 +28,7 @@ async def get_publication(publicationId: str, db: Session = Depends(database.get
 
 @router.post("/publications", status_code=status.HTTP_201_CREATED)
 async def create_publication(input: schemas.CreatePublicationRequest, db: Session = Depends(database.get_conn)):
-    # Check if publication doesn't exist by id
+    # Check for duplicates
     if input.id and db.query(models.Publication).filter(models.Publication.id == input.id).first():
         raise HTTPException(status_code=409, detail="This publication already exists!")
     elif input.id is None:

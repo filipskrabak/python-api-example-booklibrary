@@ -2,6 +2,11 @@ import datetime
 import uuid
 from pydantic import BaseModel, EmailStr, validator
 
+def enum_validator(v, values):
+    if v not in values:
+        raise ValueError('Status enum must be one of the following: ' + ', '.join(values))
+    return v
+
 class CreateUserRequest(BaseModel):
     id:uuid.UUID = None
     personal_identificator:str
@@ -23,22 +28,53 @@ class CreateCardRequest(BaseModel):
     magstripe:str
     status:str
 
-    @validator('status')
-    def status_must_be_enum(cls, v):
-        if v not in ['active', 'inactive', 'expired']:
-            raise ValueError('Status enum must be one of the following: active, inactive, expired')
-        return v
+    _validate_status = validator('status', allow_reuse=True)(lambda v: enum_validator(v, ['active', 'inactive', 'expired']))
 
 class PatchCardRequest(BaseModel):
     user_id:uuid.UUID = None
     status:str = None
 
-    @validator('status')
-    def status_must_be_enum(cls, v):
-        if v not in ['active', 'inactive', 'expired']:
-            raise ValueError('Status enum must be one of the following: active, inactive, expired')
-        return v
+    _validate_status = validator('status', allow_reuse=True)(lambda v: enum_validator(v, ['active', 'inactive', 'expired']))
 
 class CreatePublicationRequest(BaseModel):
     id:uuid.UUID = None
     title:str
+
+class CreateAuthorRequest(BaseModel):
+    id:uuid.UUID = None
+    name:str
+    surname:str
+
+class PatchAuthorRequest(BaseModel):
+    name:str = None
+    surname:str = None
+
+class CreateCategoryRequest(BaseModel):
+    id:uuid.UUID = None
+    name:str
+
+class PatchCategoryRequest(BaseModel):
+    name:str = None
+
+class CreateInstanceRequest(BaseModel):
+    id:uuid.UUID = None
+    type:str
+    publisher:str
+    year:int
+    status:str
+    publication_id:uuid.UUID
+
+    _validate_type = validator('type', allow_reuse=True)(lambda v: enum_validator(v, ['physical', 'ebook', 'audiobook']))
+
+    _validate_status = validator('status', allow_reuse=True)(lambda v: enum_validator(v, ['available', 'reserved']))
+
+class PatchInstanceRequest(BaseModel):
+    type:str = None
+    publisher:str = None
+    year:int = None
+    status:str = None
+    publication_id:uuid.UUID = None
+
+    _validate_type = validator('type', allow_reuse=True)(lambda v: enum_validator(v, ['physical', 'ebook', 'audiobook']))
+
+    _validate_status = validator('status', allow_reuse=True)(lambda v: enum_validator(v, ['available', 'reserved']))

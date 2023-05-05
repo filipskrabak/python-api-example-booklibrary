@@ -46,6 +46,32 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
     )
+    op.create_table(
+        'instances',
+        sa.Column('id', UUID(as_uuid=True), primary_key=True),
+        sa.Column('type', sa.Enum('physical', 'ebook', 'audiobook', name='type'), nullable=False),
+        sa.Column('publisher', sa.Text(), nullable=False),
+        sa.Column('year', sa.Integer(), nullable=False),
+        sa.Column('status', sa.Enum('available', 'reserved', name='status'), nullable=False),
+        sa.Column('publication_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
+    )
+    op.create_table(
+        'authors',
+        sa.Column('id', UUID(as_uuid=True), primary_key=True),
+        sa.Column('name', sa.Text(), nullable=False),
+        sa.Column('surname', sa.Text(), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
+    )
+    op.create_table(
+        'categories',
+        sa.Column('id', UUID(as_uuid=True), primary_key=True),
+        sa.Column('name', sa.Text(), nullable=False, unique=True),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
+    )
 
 
 
@@ -53,3 +79,4 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_table('cards')
     op.drop_table('publications')
+    op.drop_table('authors')

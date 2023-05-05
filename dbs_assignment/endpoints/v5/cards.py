@@ -30,7 +30,7 @@ async def get_card(cardId: str, db: Session = Depends(database.get_conn)):
 
 @router.post("/cards", status_code=status.HTTP_201_CREATED)
 async def create_card(input: schemas.CreateCardRequest, db: Session = Depends(database.get_conn)):
-    # Check if card doesn't exist by id
+    # Check for duplicates
     if input.id and db.query(models.Card).filter(models.Card.id == input.id).first():
         raise HTTPException(status_code=409, detail="This Card ID already exists")
     elif input.id is None:
