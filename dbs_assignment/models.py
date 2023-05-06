@@ -3,6 +3,7 @@ import enum
 from sqlalchemy.sql.schema import Column
 from dbs_assignment.database import Base
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 # ENUMS
 class CardStatus(enum.Enum):
@@ -18,6 +19,11 @@ class InstanceType(enum.Enum):
     physical = 'physical'
     ebook = 'ebook'
     audiobook = 'audiobook'
+
+class RentalStatus(enum.Enum):
+    active = 'active'
+    overdue = 'overdue'
+    returned = 'returned'
 
 class User(Base):
     __tablename__ = "users"
@@ -50,6 +56,8 @@ class Publication(Base):
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))
 
+    instances = relationship("Instance", back_populates="publication")
+
 class Author(Base):
     __tablename__ = "authors"
 
@@ -75,6 +83,28 @@ class Instance(Base):
     publisher = Column(String, nullable=False)
     year = Column(Integer, nullable=False)
     status = Column(Enum(InstanceStatus), nullable=False)
+    publication_id = Column(UUID(as_uuid=True), ForeignKey("publications.id"), nullable=False)
+    created_at = Column(DateTime(timezone=True))
+    updated_at = Column(DateTime(timezone=True))
+
+    publication = relationship("Publication", back_populates="instances")
+
+class Rental(Base):
+    __tablename__ = "rentals"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    instance_id = Column(UUID(as_uuid=True), ForeignKey("instances.id"), nullable=False)
+    duration = Column(Integer, nullable=False)
+    status = Column(Enum(RentalStatus), nullable=False)
+    start_date = Column(DateTime(timezone=True))
+    end_date = Column(DateTime(timezone=True))
+
+class Reservation(Base):
+    __tablename__ = "reservations"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     publication_id = Column(UUID(as_uuid=True), ForeignKey("publications.id"), nullable=False)
     created_at = Column(DateTime(timezone=True))
     updated_at = Column(DateTime(timezone=True))

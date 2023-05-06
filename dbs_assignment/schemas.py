@@ -78,3 +78,9 @@ class PatchInstanceRequest(BaseModel):
     _validate_type = validator('type', allow_reuse=True)(lambda v: enum_validator(v, ['physical', 'ebook', 'audiobook']))
 
     _validate_status = validator('status', allow_reuse=True)(lambda v: enum_validator(v, ['available', 'reserved']))
+
+class CreateRentalRequest(BaseModel):
+    id:uuid.UUID = None
+    user_id:uuid.UUID
+    publication_id:uuid.UUID
+    duration:int

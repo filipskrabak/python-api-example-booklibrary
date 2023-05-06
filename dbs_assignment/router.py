@@ -6,6 +6,7 @@ from dbs_assignment.endpoints.v5 import publications
 from dbs_assignment.endpoints.v5 import authors
 from dbs_assignment.endpoints.v5 import categories
 from dbs_assignment.endpoints.v5 import instances
+from dbs_assignment.endpoints.v5 import rentals
 
 router = APIRouter()
 
@@ -15,3 +16,4 @@ router.include_router(authors.router, tags=["authors"])
 router.include_router(publications.router, tags=["publications"])
 router.include_router(categories.router, tags=["categories"])
 router.include_router(instances.router, tags=["instances"])
+router.include_router(rentals.router, tags=["rentals"])

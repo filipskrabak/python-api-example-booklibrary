@@ -72,6 +72,32 @@ def upgrade() -> None:
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
     )
+    op.create_table(
+        'rentals',
+        sa.Column('id', UUID(as_uuid=True), primary_key=True),
+        sa.Column('user_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('instance_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('duration', sa.Integer(), nullable=False),
+        sa.Column('status', sa.Enum('active', 'overdue', 'returned', name='rentalstatus'), nullable=False),
+        sa.Column('start_date', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('end_date', sa.DateTime(timezone=True), nullable=False)
+    )
+    op.create_table(
+        'reservations',
+        sa.Column('id', UUID(as_uuid=True), primary_key=True),
+        sa.Column('user_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('publication_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
+    )
+
+    # Foreign keys
+    op.create_foreign_key('fk_cards_user_id', 'cards', 'users', ['user_id'], ['id'])
+    op.create_foreign_key('fk_instances_publication_id', 'instances', 'publications', ['publication_id'], ['id'])
+    op.create_foreign_key('fk_rentals_user_id', 'rentals', 'users', ['user_id'], ['id'])
+    op.create_foreign_key('fk_rentals_instance_id', 'rentals', 'instances', ['instance_id'], ['id'])
+    op.create_foreign_key('fk_reservations_user_id', 'reservations', 'users', ['user_id'], ['id'])
+    op.create_foreign_key('fk_reservations_publication_id', 'reservations', 'publications', ['publication_id'], ['id'])
 
 
 
