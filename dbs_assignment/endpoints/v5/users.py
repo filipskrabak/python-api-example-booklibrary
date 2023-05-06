@@ -40,8 +40,8 @@ async def get_user(userId: str, db: Session = Depends(database.get_conn)):
             "user_id": rental.user_id,
             "publication_instance_id": rental.instance_id,
             "duration": rental.duration,
-            "start_date": rental.start_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
-            "end_date": rental.end_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+            #"start_date": rental.start_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+            #"end_date": rental.end_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
             "status": rental.status,
         })
 

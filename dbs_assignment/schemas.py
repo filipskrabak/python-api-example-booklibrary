@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from pydantic import BaseModel, EmailStr, validator, Field
+from pydantic import BaseModel, EmailStr, StrictStr, validator, Field
 
 def enum_validator(v, values):
     if v not in values:
@@ -61,7 +61,7 @@ class CreateCategoryRequest(BaseModel):
     name:str
 
 class PatchCategoryRequest(BaseModel):
-    name:str = None
+    name:StrictStr
 
 class CreateInstanceRequest(BaseModel):
     id:uuid.UUID = None

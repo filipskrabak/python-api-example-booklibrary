@@ -57,11 +57,6 @@ async def create_category(input: schemas.CreateCategoryRequest, db: Session = De
 
 @router.patch("/categories/{categoryId}")
 async def update_category(categoryId: str, input: schemas.PatchCategoryRequest, db: Session = Depends(database.get_conn)):
-    # debug print
-    print("[DEBUG] ")
-    print("input.name: " + input.name)
-    print("categoryId: " + str(categoryId))
-
     result = db.query(models.Category).filter(models.Category.id == categoryId).first()
 
     if not result:

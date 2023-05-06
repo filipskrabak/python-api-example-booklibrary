@@ -6,7 +6,7 @@ from sqlalchemy.pool import QueuePool
 from sqlalchemy.ext.declarative import declarative_base
 
 engine = create_engine(f"postgresql://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}",
-                       echo=True,
+                       #echo=True,
                        poolclass=QueuePool,
                        pool_size=5,
                        max_overflow=10,
