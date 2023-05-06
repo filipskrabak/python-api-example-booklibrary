@@ -59,7 +59,7 @@ async def create_publication(input: schemas.CreatePublicationRequest, db: Sessio
         author_db = db.query(models.Author).filter(models.Author.name == author['name'], models.Author.surname == author['surname']).first()
 
         if not author_db:
-            raise HTTPException(status_code=404, detail=f"Author {author['name']} {author['surname']} not found in the database")
+            raise HTTPException(status_code=400, detail=f"Author {author['name']} {author['surname']} not found in the database")
 
         # assign the author id to the publication
         to_create.authors.append(author_db)
@@ -69,7 +69,7 @@ async def create_publication(input: schemas.CreatePublicationRequest, db: Sessio
         category_db = db.query(models.Category).filter(models.Category.name == category).first()
 
         if not category_db:
-            raise HTTPException(status_code=404, detail=f"Category {category} not found in the database")
+            raise HTTPException(status_code=400, detail=f"Category {category} not found in the database")
 
         # assign the category id to the publication
         to_create.categories.append(category_db)
