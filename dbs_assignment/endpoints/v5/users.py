@@ -31,7 +31,7 @@ async def get_user(userId: str, db: Session = Depends(database.get_conn)):
             "id": reservation.id,
             "user_id": reservation.user_id,
             "publication_id": reservation.publication_id,
-            "created_at": reservation.created_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+            #"created_at": reservation.created_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
         })
 
     for rental in result.rentals:
