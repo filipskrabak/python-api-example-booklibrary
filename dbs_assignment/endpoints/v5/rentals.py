@@ -39,11 +39,11 @@ async def create_rental(input: schemas.CreateRentalRequest, db: Session = Depend
 
     # Check if user ID is valid
     if not db.query(models.User).filter(models.User.id == input.user_id).first():
-        raise HTTPException(status_code=404, detail="User Not Found (ID invalid)")
+        raise HTTPException(status_code=400, detail="User Not Found (ID invalid)")
 
     # Check if publication ID is valid
     if not db.query(models.Publication).filter(models.Publication.id == input.publication_id).first():
-        raise HTTPException(status_code=404, detail="Publication Not Found (ID invalid)")
+        raise HTTPException(status_code=400, detail="Publication Not Found (ID invalid)")
 
     # Get publication model
     publication = db.query(models.Publication).filter(models.Publication.id == input.publication_id).first()
@@ -53,6 +53,13 @@ async def create_rental(input: schemas.CreateRentalRequest, db: Session = Depend
 
     if not instance:
         raise HTTPException(status_code=400, detail="No available instances for this publication")
+
+    #  If there are some reservations for the publication, only first user in the queue is able to create a rental
+    if db.query(models.Reservation).filter(models.Reservation.publication_id == publication.id).first():
+        # queue ordered by reservation created_at
+        queue = db.query(models.Reservation).filter(models.Reservation.publication_id == publication.id).order_by(models.Reservation.created_at.asc()).all()
+        if queue[0].user_id != input.user_id:
+            raise HTTPException(status_code=400, detail="The user is not first in the queue")
 
     # Set instance status to reserved
     instance.status = "reserved"
