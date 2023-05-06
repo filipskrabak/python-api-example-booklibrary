@@ -48,13 +48,14 @@ async def create_rental(input: schemas.CreateRentalRequest, db: Session = Depend
     # Get publication model
     publication = db.query(models.Publication).filter(models.Publication.id == input.publication_id).first()
 
-    # Check if publication has available instances by ORM relationship
+    # Check if publication has available instances
     instance = db.query(models.Instance).filter(models.Instance.publication_id == publication.id, models.Instance.status == 'available').first()
 
     if not instance:
         raise HTTPException(status_code=400, detail="No available instances for this publication")
 
-
+    # Set instance status to reserved
+    instance.status = "reserved"
 
     to_create = models.Rental(
         id=input.id,
@@ -79,28 +80,26 @@ async def create_rental(input: schemas.CreateRentalRequest, db: Session = Depend
         "status": to_create.status
     }
 
-@router.patch("/categories/{categoryId}")
-async def update_category(categoryId: str, input: schemas.PatchCategoryRequest, db: Session = Depends(database.get_conn)):
-    result = db.query(models.Category).filter(models.Category.id == categoryId).first()
+@router.patch("/rentals/{rentalId}")
+async def update_rental(rentalId: str, input: schemas.PatchRentalRequest, db: Session = Depends(database.get_conn)):
+    result = db.query(models.Rental).filter(models.Rental.id == rentalId).first()
 
     if not result:
-        raise HTTPException(status_code=404, detail="Category Not Found")
+        raise HTTPException(status_code=404, detail="Rental Not Found")
 
-    # Check for duplicates
-    if db.query(models.Category).filter(models.Category.name == input.name).first():
-        raise HTTPException(status_code=409, detail="Conflict! This category name already exists.")
+    result.duration = input.duration
+    result.end_date = datetime.datetime.now() + datetime.timedelta(days=input.duration)
 
-    if(input.name):
-        result.name = input.name
-
-    result.updated_at = datetime.datetime.now()
     db.commit()
 
     return {
         "id": result.id,
-        "name": result.name,
-        "created_at": result.created_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
-        "updated_at": result.updated_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z'
+        "user_id": result.user_id,
+        "publication_instance_id": result.instance_id,
+        "duration": result.duration,
+        "start_date": result.start_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+        "end_date": result.end_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+        "status": result.status
     }
 
 @router.delete("/categories/{categoryId}", status_code=status.HTTP_204_NO_CONTENT)

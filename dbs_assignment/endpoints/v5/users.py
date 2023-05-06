@@ -23,18 +23,48 @@ async def get_user(userId: str, db: Session = Depends(database.get_conn)):
         parent = db.query(models.User).filter(models.User.id == result.parent_id).first()
         result.email = parent.email
 
-    return {
+    reservations = []
+    rentals = []
+
+    for reservation in result.reservations:
+        reservations.append({
+            "id": reservation.id,
+            "user_id": reservation.user_id,
+            "publication_id": reservation.publication_id,
+            "created_at": reservation.created_at.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+        })
+
+    for rental in result.rentals:
+        rentals.append({
+            "id": rental.id,
+            "user_id": rental.user_id,
+            "publication_instance_id": rental.instance_id,
+            "duration": rental.duration,
+            "start_date": rental.start_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+            "end_date": rental.end_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
+            "status": rental.status,
+        })
+
+    to_return = {
         "id": result.id,
         "name": result.name,
         "surname": result.surname,
         "email": result.email,
         "birth_date": result.birth_date,
         "personal_identificator": result.identification_num,
-        #"reservations": [],
-        #"rentals": [],
+        "reservations": reservations,
+        "rentals": rentals,
         "created_at": result.created_at,
         "updated_at": result.updated_at
     }
+
+    if(len(reservations) == 0):
+        del to_return["reservations"]
+
+    if(len(rentals) == 0):
+        del to_return["rentals"]
+
+    return to_return
 
 @router.post("/users", status_code=status.HTTP_201_CREATED)
 async def create_user(input: schemas.CreateUserRequest, db: Session = Depends(database.get_conn)):

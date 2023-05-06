@@ -1,6 +1,6 @@
 import datetime
 import uuid
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, Field
 
 def enum_validator(v, values):
     if v not in values:
@@ -39,6 +39,13 @@ class PatchCardRequest(BaseModel):
 class CreatePublicationRequest(BaseModel):
     id:uuid.UUID = None
     title:str
+    authors:list
+    categories:list
+
+class PatchPublicationRequest(BaseModel):
+    title:str = None
+    authors:list = None
+    categories:list = None
 
 class CreateAuthorRequest(BaseModel):
     id:uuid.UUID = None
@@ -83,4 +90,12 @@ class CreateRentalRequest(BaseModel):
     id:uuid.UUID = None
     user_id:uuid.UUID
     publication_id:uuid.UUID
-    duration:int
+    duration:int = Field(..., gt=0, lt=15)
+
+class PatchRentalRequest(BaseModel):
+    duration:int = Field(..., gt=0, lt=15)
+
+class CreateReservationRequest(BaseModel):
+    id:uuid.UUID = None
+    user_id:uuid.UUID
+    publication_id:uuid.UUID

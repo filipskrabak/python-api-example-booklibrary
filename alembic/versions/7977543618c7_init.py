@@ -88,16 +88,32 @@ def upgrade() -> None:
         sa.Column('user_id', UUID(as_uuid=True), nullable=False),
         sa.Column('publication_id', UUID(as_uuid=True), nullable=False),
         sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
-        sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False)
+        sa.Column('expire_at', sa.DateTime(timezone=True), nullable=True)
+    )
+
+    # Pivots
+    op.create_table(
+        'publication_authors',
+        sa.Column('publication_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('author_id', UUID(as_uuid=True), nullable=False),
+        sa.ForeignKeyConstraint(['author_id'], ['authors.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['publication_id'], ['publications.id'],  ondelete='CASCADE')
+    )
+    op.create_table(
+        'publication_categories',
+        sa.Column('publication_id', UUID(as_uuid=True), nullable=False),
+        sa.Column('category_id', UUID(as_uuid=True), nullable=False),
+        sa.ForeignKeyConstraint(['category_id'], ['categories.id'], ondelete='CASCADE'),
+        sa.ForeignKeyConstraint(['publication_id'], ['publications.id'], ondelete='CASCADE')
     )
 
     # Foreign keys
     op.create_foreign_key('fk_cards_user_id', 'cards', 'users', ['user_id'], ['id'])
-    op.create_foreign_key('fk_instances_publication_id', 'instances', 'publications', ['publication_id'], ['id'])
-    op.create_foreign_key('fk_rentals_user_id', 'rentals', 'users', ['user_id'], ['id'])
-    op.create_foreign_key('fk_rentals_instance_id', 'rentals', 'instances', ['instance_id'], ['id'])
-    op.create_foreign_key('fk_reservations_user_id', 'reservations', 'users', ['user_id'], ['id'])
-    op.create_foreign_key('fk_reservations_publication_id', 'reservations', 'publications', ['publication_id'], ['id'])
+    op.create_foreign_key('fk_instances_publication_id', 'instances', 'publications', ['publication_id'], ['id'], ondelete='CASCADE')
+    op.create_foreign_key('fk_rentals_user_id', 'rentals', 'users', ['user_id'], ['id'], ondelete='CASCADE')
+    op.create_foreign_key('fk_rentals_instance_id', 'rentals', 'instances', ['instance_id'], ['id'], ondelete='CASCADE')
+    op.create_foreign_key('fk_reservations_user_id', 'reservations', 'users', ['user_id'], ['id'], ondelete='CASCADE')
+    op.create_foreign_key('fk_reservations_publication_id', 'reservations', 'publications', ['publication_id'], ['id'], ondelete='CASCADE')
 
 
 
@@ -106,3 +122,9 @@ def downgrade() -> None:
     op.drop_table('cards')
     op.drop_table('publications')
     op.drop_table('authors')
+    op.drop_table('categories')
+    op.drop_table('instances')
+    op.drop_table('rentals')
+    op.drop_table('reservations')
+    op.drop_table('publication_authors')
+    op.drop_table('publication_categories')
