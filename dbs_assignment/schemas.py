@@ -7,19 +7,23 @@ def enum_validator(v, values):
         raise ValueError('Status enum must be one of the following: ' + ', '.join(values))
     return v
 
+class AuthorsList(BaseModel):
+    name:StrictStr
+    surname:StrictStr
+
 class CreateUserRequest(BaseModel):
     id:uuid.UUID = None
     personal_identificator:str
     email:EmailStr
-    name:str
-    surname:str
+    name:StrictStr
+    surname:StrictStr
     birth_date: datetime.date # example: 2019-08-24
 
 class PatchUserRequest(BaseModel):
     personal_identificator:str = None
     email:EmailStr = None
-    name:str = None
-    surname:str = None
+    name:StrictStr = None
+    surname:StrictStr = None
     birth_date:datetime.date = None
 
 class CreateCardRequest(BaseModel):
@@ -38,27 +42,27 @@ class PatchCardRequest(BaseModel):
 
 class CreatePublicationRequest(BaseModel):
     id:uuid.UUID = None
-    title:str
-    authors:list
-    categories:list
+    title:StrictStr
+    authors:list[AuthorsList]
+    categories:list[StrictStr]
 
 class PatchPublicationRequest(BaseModel):
-    title:str = None
-    authors:list = None
-    categories:list = None
+    title:StrictStr = None
+    authors:list[AuthorsList] = None
+    categories:list[StrictStr] = None
 
 class CreateAuthorRequest(BaseModel):
     id:uuid.UUID = None
-    name:str
-    surname:str
+    name:StrictStr
+    surname:StrictStr
 
 class PatchAuthorRequest(BaseModel):
-    name:str = None
-    surname:str = None
+    name:StrictStr = None
+    surname:StrictStr = None
 
 class CreateCategoryRequest(BaseModel):
     id:uuid.UUID = None
-    name:str
+    name:StrictStr
 
 class PatchCategoryRequest(BaseModel):
     name:StrictStr
