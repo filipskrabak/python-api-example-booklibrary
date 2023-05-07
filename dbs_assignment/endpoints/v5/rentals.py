@@ -94,6 +94,10 @@ async def update_rental(rentalId: str, input: schemas.PatchRentalRequest, db: Se
     if not result:
         raise HTTPException(status_code=404, detail="Rental Not Found")
 
+    # check if rental is active
+    if result.status != 'active':
+        raise HTTPException(status_code=400, detail="Rental is not active")
+
     result.duration = input.duration
     result.end_date = datetime.datetime.now() + datetime.timedelta(days=input.duration)
 
