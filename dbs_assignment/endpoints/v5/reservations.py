@@ -69,7 +69,7 @@ async def create_reservation(input: schemas.CreateReservationRequest, db: Sessio
     }
 
 @router.delete("/reservations/{reservationId}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category(reservationId:str, db: Session = Depends(database.get_conn)):
+async def delete_reservation(reservationId:str, db: Session = Depends(database.get_conn)):
     result = db.query(models.Reservation).filter(models.Reservation.id == reservationId).first()
 
     if not result:
