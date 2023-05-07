@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table(
         'users',
         sa.Column('id', UUID(as_uuid=True), primary_key=True),
-        sa.Column('identification_num', sa.String(10), nullable=False, unique=True),
+        sa.Column('identification_num', sa.Text, nullable=False, unique=True),
         sa.Column('email', sa.String(254), nullable=True, unique=True),
         sa.Column('name', sa.Text(), nullable=False),
         sa.Column('surname', sa.Text(), nullable=False),

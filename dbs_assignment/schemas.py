@@ -29,7 +29,7 @@ class PatchUserRequest(BaseModel):
 class CreateCardRequest(BaseModel):
     id:uuid.UUID = None
     user_id:uuid.UUID
-    magstripe:str
+    magstripe:StrictStr = Field(..., min_length=20, max_length=20)
     status:str
 
     _validate_status = validator('status', allow_reuse=True)(lambda v: enum_validator(v, ['active', 'inactive', 'expired']))

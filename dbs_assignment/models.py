@@ -29,7 +29,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, index=True)
-    identification_num = Column(String(10), unique=True, nullable=False)
+    identification_num = Column(String, unique=True, nullable=False)
     email = Column(String(254), unique=True, nullable=True)
     name = Column(String)
     surname = Column(String)
