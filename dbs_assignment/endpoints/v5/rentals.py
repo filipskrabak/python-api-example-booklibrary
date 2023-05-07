@@ -112,15 +112,3 @@ async def update_rental(rentalId: str, input: schemas.PatchRentalRequest, db: Se
         "end_date": result.end_date.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z',
         "status": result.status
     }
-
-@router.delete("/categories/{categoryId}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_category(categoryId:str, db: Session = Depends(database.get_conn)):
-    result = db.query(models.Category).filter(models.Category.id == categoryId).first()
-
-    if not result:
-        raise HTTPException(status_code=404, detail="Category Not Found")
-
-    db.delete(result)
-    db.commit()
-
-    return
